@@ -1,0 +1,386 @@
+/* ────────────────────────────────────────────────────────────────
+   星垂 · 卡面翻转
+   只在「星垂 · 手机相册」这类手机端相册网格里生效；
+   别的主题、桌面端一律不碰，会自动退回原生角色卡。
+   ──────────────────────────────────────────────────────────────── */
+
+#rm_print_characters_block .character_select > .star-face {
+    display: none;
+}
+
+@media (max-width: 800px) {
+
+    /* 舞台：一张卡，两个面 */
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card {
+        perspective: 1200px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        cursor: pointer;
+    }
+
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card:focus-visible {
+        outline: 2px solid #f1ddba99;
+        outline-offset: 2px;
+    }
+
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card > .avatar,
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card > .character_select_container {
+        display: none !important;
+    }
+
+    #rm_print_characters_block .character_select.star-flip-card > .star-stage {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+        transition: transform 760ms cubic-bezier(.22, .61, .2, 1);
+        will-change: transform;
+    }
+
+    #rm_print_characters_block .character_select.star-flip-card.is-flipped > .star-stage {
+        transform: rotateY(-180deg);
+    }
+
+    #rm_print_characters_block .character_select.star-flip-card > .star-stage > .star-face {
+        position: absolute;
+        inset: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+        border-radius: inherit;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    /* 关键：backface-visibility 不影响命中测试，
+       翻过去以后必须显式换掉可点的那个面。 */
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card > .star-stage > .star-front {
+        display: block;
+        pointer-events: auto;
+    }
+
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card > .star-stage > .star-back {
+        display: flex;
+        pointer-events: none;
+    }
+
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card.is-flipped > .star-stage > .star-front {
+        pointer-events: none;
+    }
+
+    html.star-flip-on #rm_print_characters_block .character_select.star-flip-card.is-flipped > .star-stage > .star-back {
+        pointer-events: auto;
+    }
+
+    /* ── 正面：封面 ─────────────────────────────────────────── */
+
+    .star-face.star-front {
+        background: #151928;
+        color: #f1ddba;
+    }
+
+    .star-front > .star-cover {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 26%;
+        transition: transform 900ms cubic-bezier(.22, .61, .2, 1), filter 400ms ease;
+    }
+
+    .star-front::before {
+        content: '';
+        position: absolute;
+        inset: 7px;
+        z-index: 2;
+        pointer-events: none;
+        border: 1px solid #f1ddba2b;
+        border-radius: 9px;
+    }
+
+    .star-front::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+            linear-gradient(to top, #0a0e1df5 0%, #0a0e1dc4 24%, #0a0e1d00 56%),
+            radial-gradient(125% 75% at 50% 4%, #0000 52%, #070a1559 100%);
+    }
+
+    .star-front > .star-mono {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font: 300 64px/1 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        color: #f1ddba2e;
+        background: radial-gradient(90% 70% at 50% 30%, #262c47 0%, #141827 70%);
+    }
+
+    .star-front > .star-front-hint {
+        position: absolute;
+        top: 9px;
+        right: 9px;
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border: 1px solid #f1ddba3d;
+        border-radius: 999px;
+        background: #0a0e1da8;
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        color: #f1ddba;
+        font: 500 9px/1 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .18em;
+        text-indent: .18em;
+        opacity: .92;
+    }
+
+    .star-front > .star-front-hint::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #f1ddba;
+        box-shadow: 0 0 6px #f1ddbaa6;
+    }
+
+    .star-front > .star-front-name {
+        position: absolute;
+        left: 11px;
+        right: 11px;
+        bottom: 27px;
+        z-index: 3;
+        margin: 0;
+        font: 500 15.5px/1.32 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .04em;
+        color: #f1ddba;
+        text-shadow: 0 1px 10px #05070fcc, 0 0 2px #05070f80;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .star-front.is-tight > .star-front-name {
+        bottom: 11px;
+    }
+
+    .star-front > .star-front-note {
+        position: absolute;
+        left: 11px;
+        right: 11px;
+        bottom: 11px;
+        z-index: 3;
+        margin: 0;
+        font: 400 10px/1.4 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .01em;
+        color: #c7c3dcbf;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* 轻按的一点点呼吸感 */
+    .character_select.star-flip-card:active > .star-stage > .star-front > .star-cover {
+        transform: scale(1.02);
+    }
+
+    /* ── 背面：纸页 ─────────────────────────────────────────── */
+
+    .star-face.star-back {
+        display: flex;
+        flex-direction: column;
+        transform: rotateY(180deg);
+        padding: 12px 11px 10px;
+        color: #332c40;
+        background:
+            radial-gradient(140% 90% at 18% 0%, #fffdf7 0%, #f7efdf 44%, #e9dcc3 100%);
+        box-shadow:
+            inset 0 0 0 1px #ffffffd9,
+            inset 0 0 34px #a9855a1f;
+    }
+
+    /* 纸纹 */
+    .star-back::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: .4;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='.42'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
+    }
+
+    /* 相纸留白的那道细线 */
+    .star-back::after {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        z-index: 0;
+        pointer-events: none;
+        border: 1px solid #a9855a3b;
+        border-radius: 10px;
+    }
+
+    .star-back > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 这三行必须固定高度：否则会被下面正文挤扁，名字就被切掉半截 */
+    .star-back > .star-back-top,
+    .star-back > .star-back-name,
+    .star-back > .star-back-rule {
+        flex: none;
+    }
+
+    .star-back > .star-back-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .star-back > .star-back-top > .star-back-kicker {
+        font: 500 8px/1 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .3em;
+        color: #a08a5d;
+    }
+
+    .star-back > .star-back-top > .star-back-no {
+        font: 400 7.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: .1em;
+        color: #a08e6b9e;
+    }
+
+    .star-back > .star-back-name {
+        margin: 7px 0 0;
+        font: 600 17px/1.24 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .07em;
+        color: #2b2436;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .star-back > .star-back-rule {
+        display: block;
+        width: 26px;
+        height: 1px;
+        margin: 8px 0 9px;
+        background: linear-gradient(90deg, #a9855ae6, #a9855a00);
+    }
+
+    .star-back > .star-back-desc {
+        flex: 1 1 auto;
+        min-height: 0;
+        margin: 0;
+        font: 400 10.8px/1.8 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .01em;
+        color: #453c54;
+        text-align: justify;
+        word-break: break-word;
+        overflow: hidden;
+    }
+
+    /* 放不下时由脚本按整行数截断，再压一层纸色渐隐 */
+    .star-back > .star-back-desc.is-clamped {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-mask-image: linear-gradient(#000 88%, #0000 100%);
+        mask-image: linear-gradient(#000 88%, #0000 100%);
+    }
+
+    .star-back > .star-back-desc.is-loading {
+        color: #8a8199a6;
+        letter-spacing: .1em;
+    }
+
+    /* 只有一两句小传时，当作题记排：居中、留白、不渐隐 */
+    .star-back > .star-back-desc.is-quote {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 2px;
+        text-align: center;
+        font-size: 11.6px;
+        line-height: 2.05;
+        letter-spacing: .09em;
+        color: #4a4157;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    /* 描述是空的：不假装有内容，只留一行小字 */
+    .star-back > .star-back-desc.is-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 10.4px;
+        line-height: 1.9;
+        letter-spacing: .12em;
+        color: #8a8199a6;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .star-back > .star-enter {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        margin-top: 9px;
+        padding: 7.5px 10px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #342e46 0%, #201b32 100%);
+        color: #f3e4c2;
+        font: 500 11.5px/1 'Songti SC', 'Noto Serif CJK SC', SimSun, serif;
+        letter-spacing: .24em;
+        text-indent: .24em;
+        box-shadow:
+            0 4px 14px #2a233a40,
+            0 1px 0 #ffffff1f inset,
+            0 0 0 1px #a9855a1f;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .star-back > .star-enter::after {
+        content: '›';
+        font: 400 14px/1 Georgia, 'Times New Roman', serif;
+        letter-spacing: 0;
+        text-indent: 0;
+        opacity: .72;
+        margin-top: -1px;
+    }
+
+    .star-back > .star-enter:active {
+        transform: translateY(1px) scale(.99);
+        box-shadow: 0 1px 4px #2a233a33, 0 1px 0 #ffffff14 inset;
+    }
+
+}
+
+@media (max-width: 800px) and (prefers-reduced-motion: reduce) {
+    #rm_print_characters_block .character_select.star-flip-card > .star-stage {
+        transition-duration: 1ms;
+    }
+}

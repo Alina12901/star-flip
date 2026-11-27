@@ -1,0 +1,10 @@
+{
+    "display_name": "星垂 · 卡面翻转（手机）",
+    "loading_order": 90,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "author": "星垂",
+    "version": "1.0.0",
+    "homePage": "https://github.com/Alina12901/star-flip"
+}
